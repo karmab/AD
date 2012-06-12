@@ -1,0 +1,38 @@
+			README
+			======
+
+	    AD repository
+	    ------------------------------
+
+This scripts handles  common active directory operations (listing,searching,creating and deleting posix users,and do the same for sudoRoles)
+
+Requisites
+------------
+
+-python ldap package
+-AD.ini file in your home directory or in same directory as program (look at sample for syntax)
+
+Contents
+--------
+
+    README.txt          		this file
+    AD.py				creates,deletes and lists Active directory users
+    ADsudo.py				creates,deletes and lists Active directory sudoRoles
+                                                            
+
+Typical uses
+---------
+    
+    CHECK USER john.doe for company NYSE
+    AD.py -c NYSE john.doe   
+
+
+Problems?
+---------
+
+Send a mail to karimboumedhel@gmail.com or find it yourself !
+
+Ai seu te pego!
+
+karmab
+
