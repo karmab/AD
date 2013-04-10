@@ -37,6 +37,8 @@ parser.add_option("-t", "--type", dest="usertype", type="string", help="Type(int
 parser.add_option("-H", "--homedirectory", dest="unixHomeDirectory", type="string", help="Homedirectory")
 parser.add_option("-U", "--uid", dest="uid", type="string", help="Change uid(username)")
 parser.add_option("-X", "--pager", dest="pager", type="string", help="Change pager")
+parser.add_option("-9", "--switchclient", dest="switchclient", type="string", help="Switch default client")
+
 
 (options, args) = parser.parse_args()
 lockoutTime=options.lockoutTime
@@ -52,6 +54,7 @@ add=options.add
 boy=options.boy
 client=options.client
 listclients=options.listclients
+switchclient = options.switchclient
 homePhone=options.homePhone
 delete=options.delete
 usertype=options.usertype
@@ -60,15 +63,12 @@ loginShell=options.loginShell
 search=options.search
 extragroups=None
 
-if not lockoutTime and not unixHomeDirectory and not unicodePwd and not info and not uid and not pager and not add and not delete and not mail and not uidNumber and not homePhone and not loginShell and not search and not listclients and not groups:
+if not lockoutTime and not unixHomeDirectory and not unicodePwd and not info and not uid and not pager and not add and not delete and not mail and not uidNumber and not homePhone and not loginShell and not search and not listclients and not groups and not switchclient:
  print "No actions specified,leaving..."
  sys.exit(1)
 
 #parse ADS for specific client
-if os.path.exists("AD.ini"):
- ADconffile="AD.ini"
-else:
- ADconffile=os.environ['HOME']+"/AD.ini"
+ADconffile=os.environ['HOME']+"/AD.ini"
 if not os.path.exists(ADconffile):
  print "Missing %s in your  home directory.Check documentation" % ADconffile
  sys.exit(1)
@@ -106,6 +106,22 @@ if listclients:
  for cli in  sorted(ads):
   if cli=="default":continue
   print cli
+ if default.has_key("client"):print "Current default client is: %s" % (default["client"])
+ sys.exit(0)
+
+if switchclient:
+ if switchclient not in ads.keys():
+  print "Client not defined...Leaving"
+ else:
+  mod = open(ADconffile).readlines()
+  f=open(ADconffile,"w")
+  for line in mod:
+   if line.startswith("client"):
+    f.write("client=%s\n" % switchclient)
+   else:
+    f.write(line)
+  f.close()
+  print "Default Client set to %s" % (switchclient)
  sys.exit(0)
 
 try:
