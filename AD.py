@@ -62,6 +62,7 @@ mail=options.mail
 loginShell=options.loginShell
 search=options.search
 extragroups=None
+secure=False
 
 if not lockoutTime and not unixHomeDirectory and not unicodePwd and not info and not uid and not pager and not add and not delete and not mail and not uidNumber and not homePhone and not loginShell and not search and not listclients and not groups and not switchclient:
  print "No actions specified,leaving..."
@@ -130,9 +131,13 @@ try:
  authpw=ads[client]['authpw']
  domain=ads[client]['domain']
  timetoexpire=int(ads[client]['timetoexpire'])*86400
- ldapserver=ads[client]['ldapserver']
- ldapuri='ldaps://'+ldapserver
- certpath=ads[client]['certpath']
+ ldapserver=ads[client]['server']
+ if ads[client].has_key("secure") and "rue" in ads[client]['secure']:secure=True
+ if secure:
+  ldapuri="ldaps://%s" % (ldapserver)
+  certpath=ads[client]['certpath']
+ else: 
+  ldapuri='ldap://%s'% (ldapserver)
  if ads[client].has_key("internaldn"):internaldn=ads[client]['internaldn']
  if ads[client].has_key("externaldn"):externaldn=ads[client]['externaldn']
  if ads[client].has_key("homerootdir"):homerootdir=ads[client]['homerootdir']
@@ -141,10 +146,12 @@ except KeyError,e:
  print "Problem parsing your ini file:Missing parameter %s" % e
  os._exit(1)
 
-ldap.set_option( ldap.OPT_X_TLS_CACERTFILE , certpath )
-ldap.set_option ( ldap.OPT_REFERRALS , 0 )
-ldap.set_option( ldap.OPT_X_TLS_REQUIRE_CERT , 1 )
+if secure:
+ ldap.set_option( ldap.OPT_X_TLS_CACERTFILE , certpath )
+ #ldap.set_option( ldap.OPT_X_TLS_REQUIRE_CERT , 1 )
+ ldap.set_option( ldap.OPT_X_TLS_REQUIRE_CERT , ldap.OPT_X_TLS_ALLOW)
 ldap.set_option(ldap.OPT_NETWORK_TIMEOUT , 10 )
+ldap.set_option ( ldap.OPT_REFERRALS , 0 )
 
 try:
  f=socket.gethostbyname(ldapserver)
@@ -152,7 +159,6 @@ except socket.gaierror:
  print "ip associated to %s not found" % (ldapserver)
  print "update your /etc/hosts or dns config"
  os._exit(1)
-
 
 #search users
 if search:
