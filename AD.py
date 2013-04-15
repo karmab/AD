@@ -4,7 +4,7 @@ changes given ldap user attributes
 """
 
 #based on http://www.packtpub.com/article/python-ldap-applications-ldap-opearations
-import ldap,sys,os,string,getpass,optparse,time,datetime,ldap.modlist as modlist,socket
+import ldap,sys,os,getpass,optparse,datetime,ldap.modlist as modlist,socket
 import ConfigParser
 
 
